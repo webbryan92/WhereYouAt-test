@@ -7,10 +7,11 @@ hostPort = 9000
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        #self.send_header()
         self.end_headers()
+        self.wfile.write(b'Hello world')
 
-    def do_post
+    def do_POST(self):
+        return
         #TODO: figure out post requests and handling
 
 myServer = HTTPServer((hostName, hostPort), MyServer)
