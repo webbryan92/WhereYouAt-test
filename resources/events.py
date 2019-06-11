@@ -41,7 +41,6 @@ class EventList(Resource):
     def post(self):
         args = self.reqparse.parse_args()
         event = models.Event(**args)
-        event.created_at = datetime.datetime.now()
         event.save()
         return jsonify({'events': [{'event': 'Python Basics'}]})
 

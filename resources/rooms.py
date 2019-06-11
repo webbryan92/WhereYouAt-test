@@ -7,8 +7,61 @@ import models
 class RoomList(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'room_name',
+            required=True,
+            help='No room name provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'hotel'
+            required=True,
+            help='No hotel name provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'main_venue',
+            location=['form', 'json']
+            type=bool
+        )
+        self.reqparse.add_argument(
+            'room_number',
+            required=True,
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'max_occupants',
+            help='Occupants must be a number',
+            location=['form', 'json'],
+            type=int
+        )
+        self.reqparse.add_argument(
+            'games',
+            location=['form', 'json'],
+            action='append'
+        )
+        self.reqparse.add_argument(
+            'start_date',
+            required=True,
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'end_date',
+            required=True,
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'event_id',
+            required=True,
+            location=['form', 'json']
+        )
     def get(self):
         return jsonify({'rooms': [{'room': 'Python Basics'}]})
+
+    def post(self):
+        args = self.reqparse.parse_args()
+        room = models.Room(**args)
+        room.save()
 
 class Room(Resource):
     def get(self, id):
