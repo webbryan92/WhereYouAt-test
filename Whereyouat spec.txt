@@ -17,7 +17,7 @@ DELETE /events
 Room(rooms will be tied to events):
 GET /rooms
 GET /rooms/:id
-GET /rooms/event     only pull rooms tied to the event you want
+GET /rooms/event     only pull rooms tied to the event you wan(handle with get params instead?)
 POST /rooms
 PUT /rooms
 DELETE /rooms
