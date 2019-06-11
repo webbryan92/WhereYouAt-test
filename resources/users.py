@@ -1,6 +1,6 @@
 from flask import jsonify, Blueprint
 
-from flask_restful import Resource, Api,reqparse, inputs
+from flask_restful import Resource, Api, reqparse, inputs
 
 import models
 
@@ -27,10 +27,10 @@ class UserList(Resource):
             'last_name',
             location=['form', 'json']
         )
+        #TODO: handle invalid e-mails
         self.reqparse.add_argument(
             'email',
-            location=['from', 'json'],
-            type=email
+            location=['from', 'json']
         )
 
     def get(self):

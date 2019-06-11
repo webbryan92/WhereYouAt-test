@@ -14,14 +14,14 @@ class RoomList(Resource):
             location=['form', 'json']
         )
         self.reqparse.add_argument(
-            'hotel'
+            'hotel',
             required=True,
             help='No hotel name provided',
             location=['form', 'json']
         )
         self.reqparse.add_argument(
             'main_venue',
-            location=['form', 'json']
+            location=['form', 'json'],
             type=bool
         )
         self.reqparse.add_argument(
