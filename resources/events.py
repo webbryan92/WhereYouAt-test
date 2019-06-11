@@ -1,10 +1,12 @@
 from flask import jsonify, Blueprint
 
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 
 import models
 
 class EventList(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
     def get(self):
         return jsonify({'events': [{'event': 'Python Basics'}]})
 
