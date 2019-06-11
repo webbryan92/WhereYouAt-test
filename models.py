@@ -14,7 +14,7 @@ class User(Document):
     #friend_id_list = ListField(StringField())
 
 class Event(Document):
-    eventName = StringField(required=True)
+    event_name = StringField(required=True)
     hotels = ListField(StringField(max_length=50))
     start_date = DateTimeField()
     end_date = DateTimeField()
