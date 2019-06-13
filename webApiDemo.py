@@ -12,7 +12,6 @@ class MyServer(BaseHTTPRequestHandler):
 
     def do_POST(self):
         return
-        #TODO: figure out post requests and handling
 
 myServer = HTTPServer((hostName, hostPort), MyServer)
 print(time.asctime(), "Server Starts - %s:%s" % (hostName, hostPort))

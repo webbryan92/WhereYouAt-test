@@ -27,6 +27,7 @@ class RoomList(Resource):
         self.reqparse.add_argument(
             'room_number',
             required=True,
+            help='No room number provided',
             location=['form', 'json']
         )
         self.reqparse.add_argument(
@@ -41,18 +42,27 @@ class RoomList(Resource):
             action='append'
         )
         self.reqparse.add_argument(
+            'creator_id',
+            required=True,
+            help='No host user provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
             'start_date',
             required=True,
+            help='No start date provided',
             location=['form', 'json']
         )
         self.reqparse.add_argument(
             'end_date',
             required=True,
+            help='No end date provided',
             location=['form', 'json']
         )
         self.reqparse.add_argument(
             'event_id',
             required=True,
+            help='No event id provided',
             location=['form', 'json']
         )
     def get(self):

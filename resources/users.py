@@ -27,10 +27,10 @@ class UserList(Resource):
             'last_name',
             location=['form', 'json']
         )
-        #TODO: handle invalid e-mails
         self.reqparse.add_argument(
             'email',
-            location=['from', 'json']
+            location=['from', 'json'],
+            type= inputs.regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         )
 
     def get(self):
@@ -38,6 +38,7 @@ class UserList(Resource):
 
     #TODO: test post on users
     def post(self):
+        #wrap mongoengine methods in try/catch for error reporting?
         args = self.reqparse.parse_args()
         user = models.User(**args)
         user.save()

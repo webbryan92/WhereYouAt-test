@@ -17,8 +17,8 @@ class User(Document):
 class Event(Document):
     event_name = StringField(required=True)
     hotels = ListField(StringField(max_length=50))
-    start_date = DateTimeField()
-    end_date = DateTimeField()
+    start_date = DateTimeField(required=True)
+    end_date = DateTimeField(required=True)
     #TODO: saves in localtime, convert to UTC?
     created_at = DateTimeField(default=datetime.datetime.now)
 
@@ -26,10 +26,11 @@ class Room(Document):
     room_name = StringField(required=True)
     hotel = StringField(required=True)
     main_venue = BooleanField(default=False)
-    room_number = StringField()
-    max_occupants = IntField()
+    room_number = StringField(required=True)
+    max_occupants = IntField(required=True)
     games = ListField(StringField(max_length=50))
-    start_date = DateTimeField()
-    end_date = DateTimeField()
-    event_id = StringField()
+    creator_id = StringField(required=True)
+    start_date = DateTimeField(required=True)
+    end_date = DateTimeField(required=True)
+    event_id = StringField(required=True)
     created_at = DateTimeField(default=datetime.datetime.now)
