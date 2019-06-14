@@ -1,8 +1,22 @@
 from flask import jsonify, Blueprint
 
-from flask_restful import Resource, Api, reqparse, inputs
+from flask_restful import (Resource, Api, reqparse,
+                           inputs, fields, marshal,
+                           marshal_with)
 
 import models
+
+user_fields = {
+    '_id': fields.Integer,
+    'username': fields.String,
+    'gamertag': fields.String,
+    'first_name': fields.String,
+    'last_name': fields.String,
+    'access_level': fields.Integer,
+    'email': fields.String,
+    'created_at': fields.DateTime,
+    'friend_id_list': fields.List(fields.String)
+}
 
 class UserList(Resource):
     def __init__(self):
@@ -28,13 +42,21 @@ class UserList(Resource):
             location=['form', 'json']
         )
         self.reqparse.add_argument(
+            'access_level',
+            required=True,
+            help='Access level not provided',
+            location=['form', 'json'],
+            type=inputs.int_range(0, 3)
+        )
+        self.reqparse.add_argument(
             'email',
             location=['from', 'json'],
-            type= inputs.regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+            type= inputs.regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         )
 
     def get(self):
-        return jsonify({'users': [{'user': 'Python Basics'}]})
+        users = models.User.objects().to_json()
+        return {'users': users}
 
     #TODO: test post on users
     def post(self):
