@@ -3,6 +3,7 @@ from flask import jsonify, Blueprint
 from flask_restful import Resource, Api, reqparse
 
 import models
+import json
 
 class RoomList(Resource):
     def __init__(self):
