@@ -5,6 +5,7 @@ from flask_restful import (Resource, Api, reqparse,
                            marshal_with)
 
 import models
+import json
 
 user_fields = {
     '_id': fields.Integer,
@@ -55,7 +56,9 @@ class UserList(Resource):
         )
 
     def get(self):
-        users = models.User.objects().to_json()
+        users = [json.loads(user.to_json()) for user in models.User.objects()]
+        #TODO: append a created_at field to the api output so front-end
+        #is not coupled with mongo style id's
         return {'users': users}
 
     #TODO: test post on users

@@ -5,7 +5,6 @@ from flask_restful import (Resource, Api, reqparse,
 
 
 import models
-import datetime
 import json
 
 class EventList(Resource):   
@@ -40,6 +39,8 @@ class EventList(Resource):
 
     def get(self):
         events = [json.loads(event.to_json()) for event in models.Event.objects()]
+        #TODO: append a created_at field to the api output so front-end
+        #is not coupled with mongo style id's
         return {'events': events}
 
     def post(self):

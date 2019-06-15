@@ -66,7 +66,10 @@ class RoomList(Resource):
             location=['form', 'json']
         )
     def get(self):
-        return jsonify({'rooms': [{'room': 'Python Basics'}]})
+        rooms = [json.loads(room.to_json()) for room in models.Room.objects()]
+        #TODO: append a created_at field to the api output so front-end
+        #is not coupled with mongo style id's
+        return jsonify({'rooms': rooms })
 
     def post(self):
         args = self.reqparse.parse_args()
