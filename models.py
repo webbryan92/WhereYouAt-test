@@ -1,32 +1,32 @@
 import datetime
-from mongoengine import *
+import mongoengine as me
 import mongoengine_goodjson as gj
 
-connect('whereYouAt_test')
+me.connect('whereYouAt_test')
 
 class User(gj.Document):
-    username = StringField(required=True)
-    gamertag = StringField(required=True)
-    first_name = StringField(max_length=50)
-    last_name = StringField(max_length=50)
-    access_level = IntField(max_value=3)
-    email = EmailField()
-    friend_id_list = ListField(StringField())
+    username = me.StringField(required=True)
+    gamertag = me.StringField(required=True)
+    first_name = me.StringField(max_length=50)
+    last_name = me.StringField(max_length=50)
+    access_level = me.IntField(max_value=3)
+    email = me.EmailField()
+    friend_id_list = me.ListField(me.StringField())
 
 class Event(gj.Document):
-    event_name = StringField(required=True)
-    hotels = ListField(StringField(max_length=50))
-    start_date = DateTimeField(required=True)
-    end_date = DateTimeField(required=True)
+    event_name = me.StringField(required=True)
+    hotels = me.ListField(me.StringField(max_length=50))
+    start_date = me.DateTimeField(required=True)
+    end_date = me.DateTimeField(required=True)
 
 class Room(gj.Document):
-    room_name = StringField(required=True)
-    hotel = StringField(required=True)
-    main_venue = BooleanField(default=False)
-    room_number = StringField(required=True)
-    max_occupants = IntField(required=True)
-    games = ListField(StringField(max_length=50))
-    creator_id = StringField(required=True)
-    start_date = DateTimeField(required=True)
-    end_date = DateTimeField(required=True)
-    event_id = StringField(required=True)
+    room_name = me.StringField(required=True)
+    hotel = me.StringField(required=True)
+    main_venue = me.BooleanField(default=False)
+    room_number = me.StringField(required=True)
+    max_occupants = me.IntField(required=True)
+    games = me.ListField(me.StringField(max_length=50))
+    creator_id = me.StringField(required=True)
+    start_date = me.DateTimeField(required=True)
+    end_date = me.DateTimeField(required=True)
+    event_id = me.StringField(required=True)
