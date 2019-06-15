@@ -1,28 +1,25 @@
 import datetime
 from mongoengine import *
+import mongoengine_goodjson as gj
 
 connect('whereYouAt_test')
 
-class User(Document):
+class User(gj.Document):
     username = StringField(required=True)
     gamertag = StringField(required=True)
     first_name = StringField(max_length=50)
     last_name = StringField(max_length=50)
     access_level = IntField(max_value=3)
     email = EmailField()
-    #TODO: saves in localtime, convert to UTC?
-    created_at = DateTimeField(default=datetime.datetime.now)
     friend_id_list = ListField(StringField())
 
-class Event(Document):
+class Event(gj.Document):
     event_name = StringField(required=True)
     hotels = ListField(StringField(max_length=50))
     start_date = DateTimeField(required=True)
     end_date = DateTimeField(required=True)
-    #TODO: saves in localtime, convert to UTC?
-    created_at = DateTimeField(default=datetime.datetime.now)
 
-class Room(Document):
+class Room(gj.Document):
     room_name = StringField(required=True)
     hotel = StringField(required=True)
     main_venue = BooleanField(default=False)
@@ -33,4 +30,3 @@ class Room(Document):
     start_date = DateTimeField(required=True)
     end_date = DateTimeField(required=True)
     event_id = StringField(required=True)
-    created_at = DateTimeField(default=datetime.datetime.now)
