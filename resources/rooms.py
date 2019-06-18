@@ -4,6 +4,7 @@ from flask_restful import Resource, Api, reqparse
 
 import models
 import json
+import datetime
 
 class RoomList(Resource):
     def __init__(self):
@@ -68,18 +69,20 @@ class RoomList(Resource):
         )
     def get(self):
         rooms = [json.loads(room.to_json()) for room in models.Room.objects()]
-        #TODO: append a created_at field to the api output so front-end
-        #is not coupled with mongo style id's
+        
         return jsonify({'rooms': rooms })
 
     def post(self):
         args = self.reqparse.parse_args()
         room = models.Room(**args)
+        room.created_at = datetime.datetime.utcnow()
         room.save()
+        return "POST request successful"
 
 class Room(Resource):
     def get(self, id):
-        return jsonify({'room': 'Python Basics'})
+        room = models.Room.objects.get(id = id)
+        return [json.loads(room.to_json())]
     def put(self, id):
         return jsonify({'room': 'Python Basics'})
     def delete(self, id):

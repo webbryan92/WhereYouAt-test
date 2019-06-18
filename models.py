@@ -12,12 +12,14 @@ class User(gj.Document):
     access_level = me.IntField(max_value=3)
     email = me.EmailField()
     friend_id_list = me.ListField(me.StringField())
+    created_at = me.DateTimeField()
 
 class Event(gj.Document):
     event_name = me.StringField(required=True)
     hotels = me.ListField(me.StringField(max_length=50))
     start_date = me.DateTimeField(required=True)
     end_date = me.DateTimeField(required=True)
+    created_at = me.DateTimeField()
 
 class Room(gj.Document):
     room_name = me.StringField(required=True)
@@ -30,3 +32,4 @@ class Room(gj.Document):
     start_date = me.DateTimeField(required=True)
     end_date = me.DateTimeField(required=True)
     event_id = me.StringField(required=True)
+    created_at = me.DateTimeField()

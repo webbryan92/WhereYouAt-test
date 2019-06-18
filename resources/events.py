@@ -6,6 +6,7 @@ from flask_restful import (Resource, Api, reqparse,
 
 import models
 import json
+import datetime
 
 class EventList(Resource):   
     def __init__(self):
@@ -39,19 +40,19 @@ class EventList(Resource):
 
     def get(self):
         events = [json.loads(event.to_json()) for event in models.Event.objects()]
-        #TODO: append a created_at field to the api output so front-end
-        #is not coupled with mongo style id's
         return {'events': events}
 
     def post(self):
         args = self.reqparse.parse_args()
         event = models.Event(**args)
+        event.created_at = datetime.datetime.utcnow()
         event.save()
-        return jsonify({'events': [{'event': 'Python Basics'}]})
+        return "POST request successful"
 
 class Event(Resource):
     def get(self, id):
-        return jsonify({'event': 'Python Basics'})
+        event = models.Event.objects.get(id = id)
+        return [json.loads(event.to_json())]
     def put(self, id):
         return jsonify({'event': 'Python Basics'})
     def delete(self, id):
@@ -66,6 +67,6 @@ api.add_resource(
 )
 api.add_resource(
     Event,
-    '/events/<int:id>',
+    '/events/<string:id>',
     endpoint='event'
 )

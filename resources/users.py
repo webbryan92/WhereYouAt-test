@@ -6,6 +6,7 @@ from flask_restful import (Resource, Api, reqparse,
 
 import models
 import json
+import datetime
 
 user_fields = {
     '_id': fields.Integer,
@@ -57,8 +58,6 @@ class UserList(Resource):
 
     def get(self):
         users = [json.loads(user.to_json()) for user in models.User.objects()]
-        #TODO: append a created_at field to the api output so front-end
-        #is not coupled with mongo style id's
         return {'users': users}
 
     #TODO: test post on users
@@ -66,12 +65,14 @@ class UserList(Resource):
         #wrap mongoengine methods in try/catch for error reporting?
         args = self.reqparse.parse_args()
         user = models.User(**args)
+        user.created_at = datetime.datetime.utcnow()
         user.save()
-        return jsonify({'users': [{'user': 'Python Basics'}]})
+        return "POST request sucessful"
 
 class User(Resource):
     def get(self, id):
-        return jsonify({'user': 'Python Basics'})
+        user = models.User.objects.get(id = id)
+        return [json.loads(user.to_json())]
     def put(self, id):
         return jsonify({'user': 'Python Basics'})
     def delete(self, id):
