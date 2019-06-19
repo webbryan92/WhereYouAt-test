@@ -1,24 +1,20 @@
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, abort
 
 from flask_restful import (Resource, Api, reqparse,
-                           inputs, fields, marshal,
-                           marshal_with)
+                           inputs, fields, url_for)
+from mongoengine.errors import ValidationError
 
 import models
 import json
 import datetime
 
-user_fields = {
-    '_id': fields.Integer,
-    'username': fields.String,
-    'gamertag': fields.String,
-    'first_name': fields.String,
-    'last_name': fields.String,
-    'access_level': fields.Integer,
-    'email': fields.String,
-    'created_at': fields.DateTime,
-    'friend_id_list': fields.List(fields.String)
-}
+def user_or_404(user_id):
+    try:
+        user = models.User.objects.get(id = user_id)
+    except (models.User.DoesNotExist, ValidationError):
+        abort(404)
+    else:
+        return user
 
 class UserList(Resource):
     def __init__(self):
@@ -111,12 +107,14 @@ class User(Resource):
         return [json.loads(user.to_json())]
     def put(self, id):
         args = self.reqparse.parse_args()
-        query = models.User.objects.get(id = id)
+        query = user_or_404(id)
         query.update(**args)
-        return [json.loads(models.User.objects.get(id = id).to_json())]
+        return ([json.loads(models.User.objects.get(id = id).to_json())], 200,
+                    {'Location': url_for('resources.users.user', id=id)})
     def delete(self, id):
-        #TODO: delete method
-        return jsonify({'user': 'Python Basics'})
+        query = user_or_404(id)
+        query.delete()
+        return ('Successfully Deleted', 204, {'Location': url_for('resources.users.users')})
 
 users_api = Blueprint('resources.users', __name__)
 api = Api(users_api)

@@ -9,6 +9,7 @@ import models
 import json
 import datetime
 
+#Return the event object of id or 404 if none exists
 def event_or_404(event_id):
     try:
         event = models.Event.objects.get(id = event_id)
@@ -17,7 +18,8 @@ def event_or_404(event_id):
     else:
         return event
 
-class EventList(Resource):   
+class EventList(Resource):
+    #   
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument(
@@ -55,6 +57,7 @@ class EventList(Resource):
         args = self.reqparse.parse_args()
         event = models.Event(**args)
         event.created_at = datetime.datetime.utcnow()
+        event.updated_at = datetime.datetime.utcnow()
         event.save()
         return "POST request successful"
 
@@ -93,6 +96,7 @@ class Event(Resource):
         return [json.loads(event.to_json())]
     def put(self, id):
         args = self.reqparse.parse_args()
+        args.update({'updated_at': datetime.datetime.utcnow()})
         query = event_or_404(id)
         query.update(**args)
         return ([json.loads(models.Event.objects.get(id = id).to_json())], 200,
