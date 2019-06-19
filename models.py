@@ -13,6 +13,7 @@ class User(gj.Document):
     email = me.EmailField()
     friend_id_list = me.ListField(me.StringField())
     created_at = me.DateTimeField()
+    updated_at = me.DateTimeField()
 
 class Event(gj.Document):
     event_name = me.StringField(required=True)
@@ -20,6 +21,7 @@ class Event(gj.Document):
     start_date = me.DateTimeField(required=True)
     end_date = me.DateTimeField(required=True)
     created_at = me.DateTimeField()
+    updated_at = me.DateTimeField()
 
 class Room(gj.Document):
     room_name = me.StringField(required=True)
@@ -33,3 +35,4 @@ class Room(gj.Document):
     end_date = me.DateTimeField(required=True)
     event_id = me.StringField(required=True)
     created_at = me.DateTimeField()
+    updated_at = me.DateTimeField()

@@ -70,12 +70,52 @@ class UserList(Resource):
         return "POST request sucessful"
 
 class User(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'username',
+            required=True,
+            help='No username provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'gamertag',
+            required=True,
+            help='No gamertag provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'first_name',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'last_name',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'access_level',
+            required=True,
+            help='Access level not provided',
+            location=['form', 'json'],
+            type=inputs.int_range(0, 3)
+        )
+        self.reqparse.add_argument(
+            'email',
+            location=['from', 'json'],
+            type= inputs.regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        )
+        super().__init__()
+
     def get(self, id):
         user = models.User.objects.get(id = id)
         return [json.loads(user.to_json())]
     def put(self, id):
-        return jsonify({'user': 'Python Basics'})
+        args = self.reqparse.parse_args()
+        query = models.User.objects.get(id = id)
+        query.update(**args)
+        return [json.loads(models.User.objects.get(id = id).to_json())]
     def delete(self, id):
+        #TODO: delete method
         return jsonify({'user': 'Python Basics'})
 
 users_api = Blueprint('resources.users', __name__)
