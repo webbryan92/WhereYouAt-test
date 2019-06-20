@@ -19,7 +19,7 @@ def event_or_404(event_id):
         return event
 
 class EventList(Resource):
-    #   
+    #Define expected fields when parsing a request
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument(

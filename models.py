@@ -3,6 +3,7 @@ import mongoengine as me
 import mongoengine_goodjson as gj
 
 me.connect('whereYouAt_test')
+#HASHER = PasswordHasher()
 
 class User(gj.Document):
     username = me.StringField(required=True)
