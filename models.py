@@ -1,6 +1,7 @@
 import datetime
 import mongoengine as me
 import mongoengine_goodjson as gj
+from mongoengine.queryset.visitor import Q
 
 from argon2 import PasswordHasher
 
@@ -20,28 +21,28 @@ class User(gj.Document):
     created_at = me.DateTimeField()
     updated_at = me.DateTimeField()
 
-    #SQLite implementation, translate to mongoengine
-    # @classmethod
-    # def create_user(cls, username, email, password, **kwargs):
-    #     email = email.lower()
-    #     try:
-    #         cls.select().where(
-    #             (cls.email == email) | (cls.username**username)
-    #         ).get()
-    #     except cls.DoesNotExist:
-    #         user = cls(username=username, email=email)
-    #         user.password = user.hash_password(password)
-    #         user.save()
-    #         return user
-    #     else:
-    #         raise Exception("User with that name already exists")
+    @classmethod
+    def create_user(cls, username, email, password, **kwargs):
+        email = email.lower()
+        try:
+            #check if email or password exists, case insensitive
+            cls.objects(Q(email=email) | Q(username_iexact=username))
+        except cls.DoesNotExist:
+            user = cls(username=username, email=email, **kwargs)
+            user.password = user.hash_password(password)
+            user.save()
+            return user
+        else:
+            raise Exception("User with that name already exists")
 
+    #create a password hasher and verifier
     @staticmethod
     def hash_password(password):
         return HASHER.hash(password)
 
+    #returns boolean
     def verify_password(self, password):
-        return HASHER.hash(self.password, password)
+        return HASHER.verify(self.password, password)
 
 
 class Event(gj.Document):
