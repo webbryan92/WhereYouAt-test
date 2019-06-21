@@ -1,13 +1,22 @@
 from flask import jsonify, Blueprint, abort
 
 from flask_restful import (Resource, Api, reqparse,
-                           inputs, fields, url_for)
+                           inputs, fields, url_for, marshal, marshal_with)
 from mongoengine.errors import ValidationError
-
 
 import models
 import json
 import datetime
+
+event_fields = {
+    'id': fields.String,
+    'event_name': fields.String,
+    'hotels': fields.List(fields.String),
+    'start_date': fields.String,
+    'end_date': fields.String,
+    'created_at': fields.DateTime,
+    'updated_at': fields.DateTime
+}
 
 #Return the event object of id or 404 if none exists
 def event_or_404(event_id):
@@ -50,16 +59,18 @@ class EventList(Resource):
         super().__init__()
 
     def get(self):
-        events = [json.loads(event.to_json()) for event in models.Event.objects()]
-        return {'events': events}
+        #events = [json.loads(event.to_json()) for event in models.Event.objects()]
+        marshalled = [marshal(event, event_fields) for event in models.Event.objects()]
+        return {'events': marshalled}
 
+    @marshal_with(event_fields)
     def post(self):
         args = self.reqparse.parse_args()
         event = models.Event(**args)
         event.created_at = datetime.datetime.utcnow()
         event.updated_at = datetime.datetime.utcnow()
         event.save()
-        return "POST request successful"
+        return (event, 201, {'Location': url_for('resources.events.event', id=event.id)})
 
 class Event(Resource):
     def __init__(self):
@@ -91,9 +102,12 @@ class Event(Resource):
         )
         super().__init__()
 
+    @marshal_with(event_fields)
     def get(self, id):
         event = event_or_404(id)
         return [json.loads(event.to_json())]
+
+    @marshal_with(event_fields)
     def put(self, id):
         args = self.reqparse.parse_args()
         args.update({'updated_at': datetime.datetime.utcnow()})

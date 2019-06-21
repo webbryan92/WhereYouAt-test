@@ -16,7 +16,7 @@ class User(gj.Document):
     first_name = me.StringField(max_length=50)
     last_name = me.StringField(max_length=50)
     access_level = me.IntField(max_value=3)
-    email = me.EmailField()
+    email = me.EmailField(required=True)
     friend_id_list = me.ListField(me.StringField())
     created_at = me.DateTimeField()
     updated_at = me.DateTimeField()
@@ -26,7 +26,7 @@ class User(gj.Document):
         email = email.lower()
         try:
             #check if email or password exists, case insensitive
-            cls.objects(Q(email=email) | Q(username_iexact=username))
+            cls.objects(Q(email=email) | Q(username__iexact=username))
         except cls.DoesNotExist:
             user = cls(username=username, email=email, **kwargs)
             user.password = user.hash_password(password)
