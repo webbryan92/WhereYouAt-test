@@ -2,11 +2,15 @@ import datetime
 import mongoengine as me
 import mongoengine_goodjson as gj
 
+from argon2 import PasswordHasher
+
 me.connect('whereYouAt_test')
-#HASHER = PasswordHasher()
+HASHER = PasswordHasher()
+
 
 class User(gj.Document):
     username = me.StringField(required=True)
+    password = me.StringField(required=True)
     gamertag = me.StringField(required=True)
     first_name = me.StringField(max_length=50)
     last_name = me.StringField(max_length=50)
@@ -16,6 +20,30 @@ class User(gj.Document):
     created_at = me.DateTimeField()
     updated_at = me.DateTimeField()
 
+    #SQLite implementation, translate to mongoengine
+    # @classmethod
+    # def create_user(cls, username, email, password, **kwargs):
+    #     email = email.lower()
+    #     try:
+    #         cls.select().where(
+    #             (cls.email == email) | (cls.username**username)
+    #         ).get()
+    #     except cls.DoesNotExist:
+    #         user = cls(username=username, email=email)
+    #         user.password = user.hash_password(password)
+    #         user.save()
+    #         return user
+    #     else:
+    #         raise Exception("User with that name already exists")
+
+    @staticmethod
+    def hash_password(password):
+        return HASHER.hash(password)
+
+    def verify_password(self, password):
+        return HASHER.hash(self.password, password)
+
+
 class Event(gj.Document):
     event_name = me.StringField(required=True)
     hotels = me.ListField(me.StringField(max_length=50))
@@ -24,6 +52,7 @@ class Event(gj.Document):
     created_at = me.DateTimeField()
     updated_at = me.DateTimeField()
 
+
 class Room(gj.Document):
     room_name = me.StringField(required=True)
     hotel = me.StringField(required=True)
@@ -31,7 +60,7 @@ class Room(gj.Document):
     room_number = me.StringField(required=True)
     max_occupants = me.IntField(required=True)
     games = me.ListField(me.StringField(max_length=50))
-    creator_id = me.StringField(required=True)
+    creator = me.ReferenceField(User)
     start_date = me.DateTimeField(required=True)
     end_date = me.DateTimeField(required=True)
     event_id = me.StringField(required=True)

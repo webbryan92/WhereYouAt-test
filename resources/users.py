@@ -51,6 +51,19 @@ class UserList(Resource):
             location=['from', 'json'],
             type= inputs.regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         )
+        self.reqparse.add_argument(
+            'password',
+            required=True,
+            help = 'No password verification provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'verify_password',
+            required=True,
+            help = 'No password verification provided',
+            location=['form', 'json']
+        )
+        super().__init__()
 
     def get(self):
         users = [json.loads(user.to_json()) for user in models.User.objects()]

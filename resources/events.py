@@ -99,7 +99,8 @@ class Event(Resource):
         args.update({'updated_at': datetime.datetime.utcnow()})
         query = event_or_404(id)
         query.update(**args)
-        return ([json.loads(models.Event.objects.get(id = id).to_json())], 200,
+        query.reload()
+        return ([json.loads(query.to_json())], 200,
                     {'Location': url_for('resources.events.event', id=id)})
     def delete(self, id):
         query = event_or_404(id)

@@ -53,7 +53,7 @@ class RoomList(Resource):
             action='append'
         )
         self.reqparse.add_argument(
-            'creator_id',
+            'creator',
             required=True,
             help='No host user provided',
             location=['form', 'json']
