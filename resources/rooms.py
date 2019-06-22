@@ -1,11 +1,28 @@
 from flask import jsonify, Blueprint, abort
 
-from flask_restful import Resource, Api, reqparse, inputs, fields, url_for
+from flask_restful import (Resource, Api, reqparse,
+                           inputs, fields, url_for, marshal, marshal_with)
 from mongoengine.errors import ValidationError
 
 import models
 import json
 import datetime
+
+room_fields = {
+    'id': fields.String,
+    'room_name': fields.String,
+    'hotel': fields.String,
+    #TODO: 'event': fields.EventField(),
+    'main_venue': fields.Boolean,
+    'room_number': fields.String,
+    'max_occupants': fields.Integer,
+    'games': fields.List(fields.String),
+    #TODO: 'creator': fields.UserField(),
+    'start_date': fields.DateTime,
+    'end_date': fields.DateTime,
+    'created_at': fields.DateTime,
+    'updated_at': fields.DateTime
+}
 
 def room_or_404(room_id):
     try:
@@ -81,15 +98,16 @@ class RoomList(Resource):
         super().__init__()
 
     def get(self):
-        rooms = [json.loads(room.to_json()) for room in models.Room.objects()]
-        return jsonify({'rooms': rooms })
+        marshalled = [marshal(room, room_fields) for room in models.Room.objects()]
+        return jsonify({'rooms': marshalled })
 
+    @marshal_with(room_fields)
     def post(self):
         args = self.reqparse.parse_args()
         room = models.Room(**args)
         room.created_at = datetime.datetime.utcnow()
         room.save()
-        return "POST request successful"
+        return (room, 201, {'Location': url_for('resources.rooms.room', id=room.id)})
 
 class Room(Resource):
     def __init__(self):
@@ -154,15 +172,17 @@ class Room(Resource):
         )
         super().__init__()
 
+    @marshal_with(room_fields)
     def get(self, id):
         room = room_or_404(id)
         return [json.loads(room.to_json())]
 
+    @marshal_with(room_fields)
     def put(self, id):
         args = self.reqparse.parse_args()
         query = room_or_404(id)
         query.update(**args)
-        return ([json.loads(models.Room.objects.get(id = id).to_json())], 200,
+        return (query, 200,
                     {'Location': url_for('resources.rooms.room', id=id)})
     def delete(self, id):
         query = room_or_404(id)

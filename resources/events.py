@@ -8,12 +8,15 @@ import models
 import json
 import datetime
 
+
 event_fields = {
     'id': fields.String,
     'event_name': fields.String,
     'hotels': fields.List(fields.String),
-    'start_date': fields.String,
-    'end_date': fields.String,
+    #depending on frontend may return datetime fields as string
+    #choose a standard?
+    'start_date': fields.DateTime,
+    'end_date': fields.DateTime,
     'created_at': fields.DateTime,
     'updated_at': fields.DateTime
 }
@@ -114,7 +117,7 @@ class Event(Resource):
         query = event_or_404(id)
         query.update(**args)
         query.reload()
-        return ([json.loads(query.to_json())], 200,
+        return (query, 200,
                     {'Location': url_for('resources.events.event', id=id)})
     def delete(self, id):
         query = event_or_404(id)

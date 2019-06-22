@@ -1,12 +1,20 @@
 from flask import jsonify, Blueprint, abort
 
 from flask_restful import (Resource, Api, reqparse,
-                           inputs, fields, url_for)
+                           inputs, fields, url_for, marshal, marshal_with)
 from mongoengine.errors import ValidationError
 
 import models
 import json
 import datetime
+
+user_fields = {
+    'display_name': fields.String,
+    'first_name': fields.String,
+    'last_name': fields.String,
+    'created_at': fields.DateTime,
+    'updated_at': fields.DateTime
+}
 
 def user_or_404(user_id):
     try:
@@ -66,8 +74,8 @@ class UserList(Resource):
         super().__init__()
 
     def get(self):
-        users = [json.loads(user.to_json()) for user in models.User.objects()]
-        return {'users': users}
+        marshalled = [marshal(user, user_fields) for user in models.User.objects()]
+        return {'users': marshalled}
 
     #TODO: test post on users
     def post(self):
@@ -76,7 +84,7 @@ class UserList(Resource):
         user = models.User(**args)
         user.created_at = datetime.datetime.utcnow()
         user.save()
-        return "POST request sucessful"
+         return (user, 201, {'Location': url_for('resources.users.user', id=user.id)})
 
 class User(Resource):
     def __init__(self):
@@ -115,14 +123,17 @@ class User(Resource):
         )
         super().__init__()
 
+    @marshal_with(user_fields)
     def get(self, id):
         user = models.User.objects.get(id = id)
         return [json.loads(user.to_json())]
+
+    @marshal_with(user_fields)
     def put(self, id):
         args = self.reqparse.parse_args()
         query = user_or_404(id)
         query.update(**args)
-        return ([json.loads(models.User.objects.get(id = id).to_json())], 200,
+        return (query, 200,
                     {'Location': url_for('resources.users.user', id=id)})
     def delete(self, id):
         query = user_or_404(id)
