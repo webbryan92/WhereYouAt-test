@@ -25,7 +25,7 @@ class User(gj.Document):
     def create_user(cls, username, email, password, **kwargs):
         email = email.lower()
         try:
-            #check if email or password exists, case insensitive
+            #check if email or username exists, case insensitive
             cls.objects(Q(email=email) | Q(username__iexact=username))
         except cls.DoesNotExist:
             user = cls(username=username, email=email, **kwargs)
@@ -33,7 +33,7 @@ class User(gj.Document):
             user.save()
             return user
         else:
-            raise Exception("User with that name already exists")
+            raise Exception("User with that name or email already exists")
 
     #create a password hasher and verifier
     @staticmethod

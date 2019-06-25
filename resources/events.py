@@ -1,4 +1,4 @@
-from flask import jsonify, Blueprint, abort
+from flask import jsonify, Blueprint, abort, g
 
 from flask_restful import (Resource, Api, reqparse,
                            inputs, fields, url_for, marshal, marshal_with)
@@ -67,6 +67,7 @@ class EventList(Resource):
         return {'events': marshalled}
 
     @marshal_with(event_fields)
+    @auth.login_required
     def post(self):
         args = self.reqparse.parse_args()
         event = models.Event(**args)
@@ -111,6 +112,7 @@ class Event(Resource):
         return [json.loads(event.to_json())]
 
     @marshal_with(event_fields)
+    @auth.login_required
     def put(self, id):
         args = self.reqparse.parse_args()
         args.update({'updated_at': datetime.datetime.utcnow()})
@@ -119,6 +121,8 @@ class Event(Resource):
         query.reload()
         return (query, 200,
                     {'Location': url_for('resources.events.event', id=id)})
+    
+    @auth.login_required
     def delete(self, id):
         query = event_or_404(id)
         query.delete()
