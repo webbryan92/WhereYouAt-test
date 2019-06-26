@@ -1,8 +1,9 @@
-from flask import jsonify, Blueprint, abort
+from flask import jsonify, Blueprint, abort, make_response
 
 from flask_restful import (Resource, Api, reqparse,
                            inputs, fields, url_for, marshal, marshal_with)
 from mongoengine.errors import ValidationError
+from auth import auth
 
 import models
 import json
@@ -19,7 +20,7 @@ user_fields = {
 def user_or_404(user_id):
     try:
         user = models.User.objects.get(id = user_id)
-    except (models.User.DoesNotExist, ValidationError):
+    except (models.User.DoesNotExist, ValidationError): 
         abort(404)
     else:
         return user

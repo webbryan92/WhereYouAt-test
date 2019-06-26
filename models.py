@@ -4,10 +4,18 @@ import mongoengine_goodjson as gj
 from mongoengine.queryset.visitor import Q
 
 from argon2 import PasswordHasher
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer,
+                          BadSignature, SignatureExpired)
+import config
+
 
 me.connect('whereYouAt_test')
 HASHER = PasswordHasher()
 
+# class that will allow lookup for who modified an event
+# class ModifiedBy(EmbeddedDocument):
+#     user = me.ObjectIdField()
+#     date = me.DateTimeFIeld
 
 class User(gj.Document):
     username = me.StringField(required=True)
@@ -35,6 +43,18 @@ class User(gj.Document):
         else:
             raise Exception("User with that name or email already exists")
 
+    
+    @staticmethod
+    def verify_auth_token(token):
+        serializer = Serializer(config.SECRET_KEY)
+        try:
+            data = serializer.loads(token)
+        except (SignatureExpired, BadSignature):
+            return None
+        else:
+            user = User.objects(id=data['id'])
+            return user
+    
     #create a password hasher and verifier
     @staticmethod
     def hash_password(password):
@@ -43,6 +63,10 @@ class User(gj.Document):
     #returns boolean
     def verify_password(self, password):
         return HASHER.verify(self.password, password)
+
+    def generate_auth_token(self, expires=3600):
+        serializer = Serializer(config.SECRET_KEY, expires_in=expires)
+        return serializer.dumps({'id': self.id})
 
 
 class Event(gj.Document):

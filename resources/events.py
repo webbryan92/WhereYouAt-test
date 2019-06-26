@@ -3,6 +3,7 @@ from flask import jsonify, Blueprint, abort, g
 from flask_restful import (Resource, Api, reqparse,
                            inputs, fields, url_for, marshal, marshal_with)
 from mongoengine.errors import ValidationError
+from auth import auth
 
 import models
 import json
