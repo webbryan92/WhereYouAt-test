@@ -35,9 +35,9 @@ class UserList(Resource):
             location=['form', 'json']
         )
         self.reqparse.add_argument(
-            'gamertag',
+            'display_name',
             required=True,
-            help='No gamertag provided',
+            help='No display_name provided',
             location=['form', 'json']
         )
         self.reqparse.add_argument(
@@ -48,16 +48,17 @@ class UserList(Resource):
             'last_name',
             location=['form', 'json']
         )
-        self.reqparse.add_argument(
-            'access_level',
-            required=True,
-            help='Access level not provided',
-            location=['form', 'json'],
-            type=inputs.int_range(0, 3)
-        )
+        # self.reqparse.add_argument(
+        #     'access_level',
+        #     required=True,
+        #     help='Access level not provided',
+        #     location=['form', 'json'],
+        #     type=inputs.int_range(0, 3)
+        # )
         self.reqparse.add_argument(
             'email',
-            location=['from', 'json'],
+            required=True,
+            location=['form', 'json'],
             type= inputs.regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         )
         self.reqparse.add_argument(
@@ -79,7 +80,7 @@ class UserList(Resource):
         return {'users': marshalled}
 
     #TODO: test post on users
-    @auth.login_required
+    #@auth.login_required
     def post(self):
         #wrap mongoengine methods in try/catch for error reporting?
         args = self.reqparse.parse_args()

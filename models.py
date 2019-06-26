@@ -18,13 +18,13 @@ HASHER = PasswordHasher()
 #     date = me.DateTimeFIeld
 
 class User(gj.Document):
-    username = me.StringField(required=True)
+    username = me.StringField(required=True, unique=True)
     password = me.StringField(required=True)
     display_name = me.StringField(required=True)
     first_name = me.StringField(max_length=50)
     last_name = me.StringField(max_length=50)
-    access_level = me.IntField(max_value=3)
-    email = me.EmailField(required=True)
+    #access_level = me.IntField(max_value=3)
+    email = me.EmailField(required=True, unique=True)
     friend_id_list = me.ListField(me.StringField())
     created_at = me.DateTimeField()
     updated_at = me.DateTimeField()
@@ -34,7 +34,7 @@ class User(gj.Document):
         email = email.lower()
         try:
             #check if email or username exists, case insensitive
-            cls.objects(Q(email=email) | Q(username__iexact=username))
+            cls.objects.get(Q(email=email) | Q(username__iexact=username))
         except cls.DoesNotExist:
             user = cls(username=username, email=email, **kwargs)
             user.password = user.hash_password(password)
