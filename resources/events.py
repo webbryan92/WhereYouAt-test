@@ -63,7 +63,6 @@ class EventList(Resource):
         super().__init__()
 
     def get(self):
-        #events = [json.loads(event.to_json()) for event in models.Event.objects()]
         marshalled = [marshal(event, event_fields) for event in models.Event.objects()]
         return {'events': marshalled}
 

@@ -13,7 +13,7 @@ auth = MultiAuth(token_auth, basic_auth)
 @basic_auth.verify_password
 def verify_password(email_or_username, password):
     try:
-        user = models.User.objects(
+        user = models.User.objects.get(
             Q(email=email_or_username) | Q(username__iexact=email_or_username)
         )
         if not user.verify_password(password):

@@ -82,15 +82,19 @@ class UserList(Resource):
     #TODO: test post on users
     #@auth.login_required
     def post(self):
-        #wrap mongoengine methods in try/catch for error reporting?
-        args = self.reqparse.parse_args()
-        # user = models.User(**args)
-        # user.created_at = datetime.datetime.utcnow()
-        # user.save()
+        args = self.reqparse.parse_args()        
         # return (user, 201, {'Location': url_for('resources.users.user', id=user.id)})
         if args.get('password') == args.get('verify_password'):
-            user = models.User.create_user(**args)
-            return marshal(user, user_fields), 201
+            #dont pass the verify_password into create user
+            del args['verify_password']
+            try:
+                user = models.User.create_user(**args)
+            except Exception as inst:
+                return make_response(json.dumps({
+                    'error': inst.args[0]
+                }), 400)
+            else:
+                return marshal(user, user_fields), 201
         return make_response(json.dumps({
             'error': 'Passwords do not match'
             }), 400)

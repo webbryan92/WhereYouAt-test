@@ -38,6 +38,8 @@ class User(gj.Document):
         except cls.DoesNotExist:
             user = cls(username=username, email=email, **kwargs)
             user.password = user.hash_password(password)
+            user.created_at = datetime.datetime.utcnow()
+            user.updated_at = user.created_at
             user.save()
             return user
         else:
