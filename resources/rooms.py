@@ -133,8 +133,9 @@ class RoomList(Resource):
         marshalled = [marshal(room, room_fields) for room in models.Room.objects()]
         return jsonify({'rooms': marshalled })
 
-    @marshal_with(room_fields)
+    
     @auth.login_required
+    @marshal_with(room_fields)
     def post(self):
         args = self.reqparse.parse_args()
         room = models.Room(
@@ -212,9 +213,9 @@ class Room(Resource):
     def get(self, id):
         room = room_or_404(id)
         return [json.loads(room.to_json())]
-
-    @marshal_with(room_fields)
+    
     @auth.login_required
+    @marshal_with(room_fields)
     def put(self, id):
         args = self.reqparse.parse_args()
         try:

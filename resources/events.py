@@ -66,8 +66,8 @@ class EventList(Resource):
         marshalled = [marshal(event, event_fields) for event in models.Event.objects()]
         return {'events': marshalled}
 
-    @marshal_with(event_fields)
     @auth.login_required
+    @marshal_with(event_fields)
     def post(self):
         args = self.reqparse.parse_args()
         event = models.Event(**args)
@@ -111,8 +111,9 @@ class Event(Resource):
         event = event_or_404(id)
         return [json.loads(event.to_json())]
 
-    @marshal_with(event_fields)
+    
     @auth.login_required
+    @marshal_with(event_fields)
     def put(self, id):
         args = self.reqparse.parse_args()
         args.update({'updated_at': datetime.datetime.utcnow()})

@@ -136,15 +136,17 @@ class User(Resource):
         )
         super().__init__()
 
-    @marshal_with(user_fields)
+    
     @auth.login_required
+    @marshal_with(user_fields)
     def get(self, id):
         user = models.User.objects.get(id = id)
         return [json.loads(user.to_json())]
 
+    
+    @auth.login_required
     @marshal_with(user_fields)
     #need access levels
-    @auth.login_required
     def put(self, id):
         args = self.reqparse.parse_args()
         query = user_or_404(id)
